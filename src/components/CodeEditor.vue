@@ -363,11 +363,16 @@ export default {
   overflow: hidden;
 }
 
-.scroll, .code_area .code_editor,textarea {
-    -ms-overflow-style: none;  /* Internet Explorer 10+ */
-    scrollbar-width: none;  /* Firefox */
+.scroll,
+.code_area .code_editor,
+textarea {
+  -ms-overflow-style: none; /* Internet Explorer 10+ */
+  scrollbar-width: none; /* Firefox */
 }
-textarea::-webkit-scrollbar, .scroll::-webkit-scrollbar, .code_area::-webkit-scrollbar, .code_editor::-webkit-scrollbar { 
-    display: none;  /* Safari and Chrome */
+textarea::-webkit-scrollbar,
+.scroll::-webkit-scrollbar,
+.code_area::-webkit-scrollbar,
+.code_editor::-webkit-scrollbar {
+  display: none; /* Safari and Chrome */
 }
 </style>

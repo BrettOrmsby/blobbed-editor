@@ -8,40 +8,71 @@
       '.min.css'
     "
   />
-  <a :href="mainSrc" download="Blobbed Editor">Download</a>
-  <CodeEditor
-    v-model="input"
-    :hide_header="true"
-    :language="settings.language"
-  />
-  <label for="blobBorderRadius"
-    >Blob Border Radius
-    <input
-      type="range"
-      min="0"
-      max="0.5"
-      step="0.01"
-      v-model="settings.blobBorderRadius"
-      id="blobBorderRadius"
-    />{{ settings.blobBorderRadius }}
-  </label>
-  <label for="blobSize"
-    >Blob Size
-    <input
-      type="range"
-      min="1"
-      max="50"
-      step="1"
-      v-model="settings.blobSize"
-      id="blobSize"
-    />{{ settings.blobSize }}
-  </label>
-  <pre><code class="hljs" v-html="highlightedCode"></code></pre>
-  <img :src="mainSrc" style="width: 100%" />
-
+  <main class="container">
+    <div class="grid">
+      <div>
+        <CodeEditor
+          v-model="input"
+          :hide_header="true"
+          :language="settings.language"
+          width="100%"
+        />
+        <br />
+        <a
+          :href="mainSrc"
+          download="Blobbed Editor"
+          role="button"
+          style="display: block"
+          >Download</a
+        >
+        <br />
+        <details>
+          <summary role="button">Settings</summary>
+          <article>
+            <label for="blobBorderRadius"
+              >Blob Border Radius:
+              <code>{{ Math.round(settings.blobBorderRadius * 100) }}%</code>
+              <input
+                type="range"
+                min="0"
+                max="1"
+                step="0.01"
+                v-model="settings.blobBorderRadius"
+                id="blobBorderRadius"
+              />
+            </label>
+            <label for="imageQuality"
+              >Image Quality:
+              <code>{{ Math.round(settings.imageQuality * 2) }}</code>
+              <input
+                type="range"
+                min="1"
+                max="50"
+                step="0.5"
+                v-model="settings.imageQuality"
+                id="imageQuality"
+              />
+            </label>
+            <label for="showLineNumbers">
+              <input
+                type="checkbox"
+                v-model="settings.showLineNumbers"
+                id="showLineNumbers"
+              />
+              Show Line Numbers
+            </label>
+          </article>
+        </details>
+      </div>
+      <div>
+        <h2>Image</h2>
+        <img :src="mainSrc" style="width: 100%" />
+      </div>
+    </div>
+  </main>
   <pre
     style="overflow: hidden; height: 0"
-  ><code class="hljs" id="output" style="display:inline-block"></code></pre>
+  ><code class="hljs output" id="output"></code></pre>
 </template>
 
 <script>
@@ -55,21 +86,17 @@ export default {
   },
   data() {
     return {
-      input: "",
+      input: 'const enter = yourText("here")',
       mainSrc: "",
       settings: {
-        theme: "github-dark",
+        theme: "atom-one-dark",
         language: "javascript",
-        blobBorderRadius: 0.5,
-        blobSize: 16,
+        blobBorderRadius: 1,
+        imageQuality: 16,
         filterSize: 0,
+        showLineNumbers: true,
       },
     };
-  },
-  computed: {
-    highlightedCode() {
-      return this.highlight(this.input, this.settings.language);
-    },
   },
   watch: {
     async input(newer) {
@@ -86,7 +113,6 @@ export default {
     },
   },
   mounted() {
-    this.input = "var blob = new Blob()";
     document.getElementById("theme").onload = async function () {
       this.mainSrc = await this.toBlobbedImage(this.input, this.settings);
     }.bind(this);
@@ -136,13 +162,21 @@ export default {
           }
         }
       }
-      outputElement.innerHTML = output;
 
+      if (settings.showLineNumbers) {
+        output =
+          "<span class='hljs-comment line-number'>&#8203;</span>" +
+          output
+            .split("\n")
+            .join("\n<span class='hljs-comment line-number'>&#8203;</span>");
+      }
+
+      outputElement.innerHTML = output;
+      outputElement.style.fontSize = settings.imageQuality + "px";
       outputElement.querySelectorAll("span").forEach((e) => {
         e.style.backgroundColor = window.getComputedStyle(e).color;
         console.log(settings.blobBorderRadius + "em");
         e.style.borderRadius = settings.blobBorderRadius + "em";
-        e.style.fontSize = settings.blobSize + "px";
       });
 
       let canvas = await html2canvas(outputElement, { backgroundColor: null });
@@ -153,13 +187,26 @@ export default {
 </script>
 
 <style>
-#output span {
-  font-size: 16px;
-  padding: 0 0.5em;
+@import "@/assets/pico.css";
+h2 {
+  text-align: center;
+  margin-bottom: 0;
+}
+.output span {
+  padding: 0 1em;
   margin: 0.25em;
   display: inline-block;
 }
-#output .indent {
+span.line-number {
+  margin-right: 0.75em;
+}
+.output .indent {
   color: transparent;
+}
+pre code.output.hljs {
+  display: inline-block;
+  padding: 2em;
+  font-size: 16px;
+  border-radius: 1em;
 }
 </style>
