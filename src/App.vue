@@ -10,13 +10,8 @@
   />
   <main class="main">
     <div class="sidebar container">
-      <a
-        :href="mainSrc"
-        download="Blobbed Editor"
-        role="button"
-        style="display: block"
-        >Download</a
-      >
+      <button v-if="downloading" aria-busy="true">Please Wait...</button>
+      <button v-else @click="downloadImage()">Download</button>
       <br />
       <article>
         <label for="blobBorderRadius"
@@ -53,13 +48,16 @@
       </article>
     </div>
     <div class="edit container">
-      <CodeEditor
-        v-model="input"
-        :hide_header="true"
-        :language="settings.language"
-        width="100%"
-        font_size="12px"
-      />
+      <div class="codeEditWrapper">
+        <CodeEditor
+          v-model="input"
+          :hide_header="true"
+          :language="settings.language"
+          width="100%"
+          font_size="12px"
+          :wrap_code="true"
+        />
+      </div>
       <br />
       <pre
         class="output-container"
@@ -79,8 +77,8 @@ export default {
   },
   data() {
     return {
+      downloading: false,
       input: 'const enter = yourText("here")',
-      mainSrc: "",
       settings: {
         theme: "atom-one-dark",
         language: "javascript",
@@ -92,31 +90,34 @@ export default {
     };
   },
   watch: {
-    async input(newer) {
+    input(newer) {
       if (newer.length > 2000) {
         this.input = newer.slice(0, 2000);
       }
-      this.mainSrc = await this.toBlobbedImage(this.input, this.settings);
+      this.updatePreview();
     },
     settings: {
-      async handler(newer) {
-        this.mainSrc = await this.toBlobbedImage(this.input, newer);
+      handler() {
+        this.updatePreview();
       },
       deep: true,
     },
   },
   mounted() {
     document.getElementById("theme").onload = async function () {
-      this.mainSrc = await this.toBlobbedImage(this.input, this.settings);
+      this.updatePreview();
     }.bind(this);
   },
   methods: {
     highlight(code, language) {
       return hljs.highlight(code, { language: language }).value;
     },
-    async toBlobbedImage(code, settings) {
+    updatePreview() {
       const outputElement = document.getElementById("output");
-      outputElement.innerHTML = this.highlight(code, settings.language);
+      outputElement.innerHTML = this.highlight(
+        this.input,
+        this.settings.language
+      );
       let output = "";
       traverse(outputElement, "");
 
@@ -156,7 +157,7 @@ export default {
         }
       }
 
-      if (settings.showLineNumbers) {
+      if (this.settings.showLineNumbers) {
         output =
           "<span class='hljs-comment line-number'>&#8203;</span>" +
           output
@@ -165,15 +166,23 @@ export default {
       }
 
       outputElement.innerHTML = output;
-      outputElement.style.fontSize = settings.imageSize + "px";
+      outputElement.style.fontSize = this.settings.imageSize + "px";
       outputElement.querySelectorAll("span").forEach((e) => {
         e.style.backgroundColor = window.getComputedStyle(e).color;
-        console.log(settings.blobBorderRadius + "em");
-        e.style.borderRadius = settings.blobBorderRadius + "em";
+        e.style.borderRadius = this.settings.blobBorderRadius + "em";
       });
-
-      let canvas = await html2canvas(outputElement, { backgroundColor: null });
-      return canvas.toDataURL();
+    },
+    async downloadImage() {
+      const element = document.getElementById("output");
+      this.downloading = true;
+      let canvas = await html2canvas(element, { backgroundColor: null });
+      this.downloading = false;
+      const a = document.createElement("a");
+      a.href = canvas.toDataURL();
+      a.download = "blobbed editor.png";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
     },
   },
 };
@@ -195,41 +204,35 @@ html {
 .sidebar {
   height: 100vh;
   overflow-y: auto;
-  width: 25vw;
+  width: 300px;
   min-width: auto;
   max-width: auto;
   border-right: 1px solid var(--muted-border-color);
 }
 .edit {
-  width: 75vw;
+  width: calc(100vw - 300px);
+  height: 100vh;
+  display: flex;
+  justify-content: space-around;
+  flex-direction: column;
   min-width: auto;
   max-width: auto;
+}
+.codeEditWrapper {
+  overflow: auto;
+  height: 45%;
+  border-radius: 12px;
 }
 .output-container {
   overflow: auto;
   width: 100%;
+  height: 45%;
   background-color: transparent;
   display: flex;
   justify-content: center;
 }
 .container {
   padding: 1em;
-}
-@media (max-width: 992px) {
-  .sidebar {
-    width: 33vw;
-  }
-  .edit {
-    width: 67vw;
-  }
-}
-@media (max-width: 768px) {
-  .sidebar {
-    width: 50vw;
-  }
-  .edit {
-    width: 50vw;
-  }
 }
 @media (max-width: 576px) {
   .main {
@@ -242,6 +245,10 @@ html {
   }
   .edit {
     width: 100%;
+    height: auto;
+  }
+  .output-container {
+    height: auto;
   }
 }
 
@@ -275,6 +282,7 @@ span.line-number {
 }
 pre code.output.hljs {
   display: inline-block;
+  height: fit-content;
   -webkit-touch-callout: none;
   -webkit-user-select: none;
   -khtml-user-select: none;
