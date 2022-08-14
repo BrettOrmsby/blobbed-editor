@@ -8,71 +8,64 @@
       '.min.css'
     "
   />
-  <main class="container">
-    <div class="grid">
-      <div>
-        <CodeEditor
-          v-model="input"
-          :hide_header="true"
-          :language="settings.language"
-          width="100%"
-        />
-        <br />
-        <a
-          :href="mainSrc"
-          download="Blobbed Editor"
-          role="button"
-          style="display: block"
-          >Download</a
-        >
-        <br />
-        <details>
-          <summary role="button">Settings</summary>
-          <article>
-            <label for="blobBorderRadius"
-              >Blob Border Radius:
-              <code>{{ Math.round(settings.blobBorderRadius * 100) }}%</code>
-              <input
-                type="range"
-                min="0"
-                max="1"
-                step="0.01"
-                v-model="settings.blobBorderRadius"
-                id="blobBorderRadius"
-              />
-            </label>
-            <label for="imageQuality"
-              >Image Quality:
-              <code>{{ Math.round(settings.imageQuality * 2) }}</code>
-              <input
-                type="range"
-                min="1"
-                max="50"
-                step="0.5"
-                v-model="settings.imageQuality"
-                id="imageQuality"
-              />
-            </label>
-            <label for="showLineNumbers">
-              <input
-                type="checkbox"
-                v-model="settings.showLineNumbers"
-                id="showLineNumbers"
-              />
-              Show Line Numbers
-            </label>
-          </article>
-        </details>
-      </div>
-      <div>
-        <h2>Image</h2>
-        <img :src="mainSrc" style="width: 100%" />
-      </div>
+  <main class="main">
+    <div class="sidebar container">
+      <a
+        :href="mainSrc"
+        download="Blobbed Editor"
+        role="button"
+        style="display: block"
+        >Download</a
+      >
+      <br />
+      <article>
+        <label for="blobBorderRadius"
+          >Blob Border Radius
+          <input
+            type="range"
+            min="0"
+            max="1"
+            step="0.01"
+            v-model="settings.blobBorderRadius"
+            id="blobBorderRadius"
+          />
+        </label>
+        <label for="imageSize"
+          >Image Size
+          <input
+            type="range"
+            min="0.5"
+            max="50"
+            step="0.5"
+            v-model="settings.imageSize"
+            id="imageSize"
+          />
+        </label>
+        <label for="showLineNumbers"
+          >Show Line Numbers
+          <input
+            role="switch"
+            type="checkbox"
+            v-model="settings.showLineNumbers"
+            id="showLineNumbers"
+          />
+        </label>
+      </article>
+    </div>
+    <div class="edit container">
+      <CodeEditor
+        v-model="input"
+        :hide_header="true"
+        :language="settings.language"
+        width="100%"
+        font_size="12px"
+      />
+      <br />
+      <pre
+        class="output-container"
+      ><code class="hljs output" id="output"></code></pre>
     </div>
   </main>
-  <pre
-    style="overflow: hidden; height: 0"
-  ><code class="hljs output" id="output"></code></pre>
 </template>
 
 <script>
@@ -92,7 +85,7 @@ export default {
         theme: "atom-one-dark",
         language: "javascript",
         blobBorderRadius: 1,
-        imageQuality: 16,
+        imageSize: 16,
         filterSize: 0,
         showLineNumbers: true,
       },
@@ -172,7 +165,7 @@ export default {
       }
 
       outputElement.innerHTML = output;
-      outputElement.style.fontSize = settings.imageQuality + "px";
+      outputElement.style.fontSize = settings.imageSize + "px";
       outputElement.querySelectorAll("span").forEach((e) => {
         e.style.backgroundColor = window.getComputedStyle(e).color;
         console.log(settings.blobBorderRadius + "em");
@@ -188,9 +181,86 @@ export default {
 
 <style>
 @import "@/assets/pico.css";
-h2 {
-  text-align: center;
-  margin-bottom: 0;
+html {
+  height: 100vh;
+}
+:root {
+  --font-size: 12px;
+}
+.main {
+  height: 100vh;
+  display: flex;
+  flex-wrap: nowrap;
+}
+.sidebar {
+  height: 100vh;
+  overflow-y: auto;
+  width: 25vw;
+  min-width: auto;
+  max-width: auto;
+  border-right: 1px solid var(--muted-border-color);
+}
+.edit {
+  width: 75vw;
+  min-width: auto;
+  max-width: auto;
+}
+.output-container {
+  overflow: auto;
+  width: 100%;
+  background-color: transparent;
+  display: flex;
+  justify-content: center;
+}
+.container {
+  padding: 1em;
+}
+@media (max-width: 992px) {
+  .sidebar {
+    width: 33vw;
+  }
+  .edit {
+    width: 67vw;
+  }
+}
+@media (max-width: 768px) {
+  .sidebar {
+    width: 50vw;
+  }
+  .edit {
+    width: 50vw;
+  }
+}
+@media (max-width: 576px) {
+  .main {
+    flex-wrap: wrap;
+  }
+  .sidebar {
+    width: 100%;
+    border: 0;
+    height: auto;
+  }
+  .edit {
+    width: 100%;
+  }
+}
+
+label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+[type="range"] {
+  width: 50% !important;
+}
+[type="range"]::-ms-track {
+  width: 50% !important;
+}
+[type="range"]::-moz-range-track {
+  width: 50% !important;
+}
+[type="range"]::-webkit-slider-runnable-track {
+  width: 50% !important;
 }
 .output span {
   padding: 0 1em;
@@ -205,8 +275,12 @@ span.line-number {
 }
 pre code.output.hljs {
   display: inline-block;
-  padding: 2em;
-  font-size: 16px;
-  border-radius: 1em;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  cursor: default;
 }
 </style>
