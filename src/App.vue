@@ -13,6 +13,7 @@
       <h1>Blobbed Editor</h1>
       <button v-if="downloading" aria-busy="true">Please Wait...</button>
       <button v-else @click="downloadImage()">Download</button>
+      <h6 class="subheading">Image Resolution: {{ resolution }}</h6>
       <h6 class="subheading">Settings</h6>
       <article>
         <label for="blobBorderRadius"
@@ -80,6 +81,7 @@ export default {
     return {
       downloading: false,
       input: 'const enter = yourText("here")',
+      resolution: "",
       settings: {
         theme: "atom-one-dark",
         language: "javascript",
@@ -165,13 +167,20 @@ export default {
             .split("\n")
             .join("\n<span class='hljs-comment line-number'>&#8203;</span>");
       }
-
       outputElement.innerHTML = output;
       outputElement.style.fontSize = this.settings.imageSize + "px";
       outputElement.querySelectorAll("span").forEach((e) => {
         e.style.backgroundColor = window.getComputedStyle(e).color;
         e.style.borderRadius = this.settings.blobBorderRadius + "em";
+        e.style.width = (e.innerText.length * 1).toString() + "em";
+        e.innerHTML = "&#8203;";
       });
+      document.querySelector(".output-container").style.overflow = "visible";
+      this.resolution =
+        outputElement.offsetWidth.toString() +
+        "x" +
+        outputElement.offsetHeight.toString();
+      document.querySelector(".output-container").style.overflow = "auto";
     },
     async downloadImage() {
       const element = document.getElementById("output");
@@ -206,6 +215,11 @@ html {
 }
 .output-container {
   margin-bottom: var(--spacing);
+  overflow: auto;
+  width: 100%;
+  background-color: transparent;
+  display: flex;
+  justify-content: center;
 }
 article {
   margin: 0;
@@ -238,12 +252,7 @@ article {
     border-radius: 12px;
   }
   .output-container {
-    overflow: auto;
-    width: 100%;
     height: 45%;
-    background-color: transparent;
-    display: flex;
-    justify-content: center;
   }
   .container {
     padding: 1em;
@@ -285,6 +294,7 @@ span.indent {
   color: transparent;
 }
 pre code.output.hljs {
+  overflow-x: visible;
   display: inline-block;
   height: fit-content;
   -webkit-touch-callout: none;
