@@ -49,13 +49,7 @@
       </article>
       <h6 class="subheading">Highlighting</h6>
       <article>
-        <input type="text" @focus="revealSearch()" @focusout="hideSearch()" />
-        <ul id="langSearch" class="listPopUp" role="listbox">
-          <li><a>Action</a></li>
-          <li><a>Another action</a></li>
-          <li><a>Something else here</a></li>
-          <li><a>Something else here</a></li>
-        </ul>
+        <SearchLang />
       </article>
       <h6 class="subheading">Data</h6>
       <article>
@@ -87,10 +81,12 @@
 import hljs from "highlight.js";
 import html2canvas from "html2canvas";
 import CodeEditor from "./components/CodeEditor.vue";
+import SearchLang from "./components/SearchLang.vue";
 
 export default {
   components: {
     CodeEditor,
+    SearchLang,
   },
   data() {
     return {
@@ -132,12 +128,6 @@ export default {
     }.bind(this);
   },
   methods: {
-    revealSearch() {
-      document.querySelector("#langSearch").style.display = "block";
-    },
-    hideSearch() {
-      document.querySelector("#langSearch").style.display = "none";
-    },
     highlight(code, language) {
       return hljs.highlight(code, { language: language }).value;
     },
@@ -173,7 +163,9 @@ export default {
                 })
                 .join("<span class='indent'>  </span>");
             })
-            .join("\n");
+            .join(
+              "\n<span class='indent' style='padding:0;margin-left:0;margin-right:0'></span>"
+            );
         } else {
           for (let child of node.childNodes) {
             traverse(
@@ -188,10 +180,10 @@ export default {
 
       if (this.settings.showLineNumbers) {
         output =
-          "<span class='hljs-comment line-number'>&#8203;</span>" +
+          "<span class='hljs-comment line-number'> </span>" +
           output
             .split("\n")
-            .join("\n<span class='hljs-comment line-number'>&#8203;</span>");
+            .join("\n<span class='hljs-comment line-number'> </span>");
       }
       outputElement.innerHTML = output;
       outputElement.style.fontSize = this.settings.imageSize + "px";
@@ -202,11 +194,13 @@ export default {
         e.innerHTML = "&#8203;";
       });
       document.querySelector(".output-container").style.overflow = "visible";
+      outputElement.style.overflow = "visible";
       this.resolution =
         outputElement.offsetWidth.toString() +
         "x" +
         outputElement.offsetHeight.toString();
       document.querySelector(".output-container").style.overflow = "auto";
+      outputElement.style.overflow = "auto";
     },
     async downloadImage() {
       const element = document.getElementById("output");
@@ -313,35 +307,6 @@ label {
 [type="range"]::-webkit-slider-runnable-track {
   width: 50% !important;
 }
-.listPopUp {
-  width: auto;
-  max-height: calc(3 * ((var(--form-element-spacing-vertical) * 1.75) + 1em));
-  overflow-y: auto;
-  display: flex;
-  align-items: center;
-  z-index: 1;
-  position: relative;
-  margin: 0 auto;
-  bottom: var(--spacing);
-  flex-direction: column;
-  padding: 0;
-  border: var(--border-width) solid var(--dropdown-border-color);
-  border-radius: var(--border-radius);
-  background-color: var(--dropdown-background-color);
-  color: var(--dropdown-color);
-  white-space: nowrap;
-}
-.listPopUp li {
-  width: 100%;
-  display: block;
-  margin-bottom: 0;
-  padding: calc(var(--form-element-spacing-vertical) * 0.5)
-    var(--form-element-spacing-horizontal);
-  list-style: none;
-}
-.listPopUp li:hover {
-  background-color: var(--dropdown-hover-background-color);
-}
 .output span {
   padding: 0 1em;
   margin: 0.25em;
@@ -354,7 +319,7 @@ span.indent {
   color: transparent;
 }
 pre code.output.hljs {
-  overflow-x: visible;
+  overflow-x: auto;
   display: inline-block;
   height: fit-content;
   -webkit-touch-callout: none;
