@@ -10,9 +10,10 @@
   />
   <main class="main">
     <div class="sidebar container">
+      <h1>Blobbed Editor</h1>
       <button v-if="downloading" aria-busy="true">Please Wait...</button>
       <button v-else @click="downloadImage()">Download</button>
-      <br />
+      <h6 class="subheading">Settings</h6>
       <article>
         <label for="blobBorderRadius"
           >Blob Border Radius
@@ -197,61 +198,64 @@ html {
   --font-size: 12px;
 }
 .main {
-  height: 100vh;
   display: flex;
-  flex-wrap: nowrap;
+  flex-wrap: wrap;
 }
 .sidebar {
-  height: 100vh;
-  overflow-y: auto;
-  width: 300px;
-  min-width: auto;
-  max-width: auto;
-  border-right: 1px solid var(--muted-border-color);
-}
-.edit {
-  width: calc(100vw - 300px);
-  height: 100vh;
-  display: flex;
-  justify-content: space-around;
-  flex-direction: column;
-  min-width: auto;
-  max-width: auto;
-}
-.codeEditWrapper {
-  overflow: auto;
-  height: 45%;
-  border-radius: 12px;
+  margin-bottom: var(--spacing);
 }
 .output-container {
-  overflow: auto;
-  width: 100%;
-  height: 45%;
-  background-color: transparent;
-  display: flex;
-  justify-content: center;
+  margin-bottom: var(--spacing);
 }
-.container {
-  padding: 1em;
+article {
+  margin: 0;
 }
-@media (max-width: 576px) {
+@media (min-width: 576px) {
   .main {
-    flex-wrap: wrap;
+    height: 100vh;
+    flex-wrap: nowrap;
   }
   .sidebar {
-    width: 100%;
-    border: 0;
-    height: auto;
+    height: 100vh;
+    overflow-y: auto;
+    width: 300px;
+    min-width: auto;
+    max-width: auto;
+    border-right: 1px solid var(--muted-border-color);
   }
   .edit {
-    width: 100%;
-    height: auto;
+    width: calc(100vw - 300px);
+    height: 100vh;
+    display: flex;
+    justify-content: space-around;
+    flex-direction: column;
+    min-width: auto;
+    max-width: auto;
+  }
+  .codeEditWrapper {
+    overflow: auto;
+    height: 45%;
+    border-radius: 12px;
   }
   .output-container {
-    height: auto;
+    overflow: auto;
+    width: 100%;
+    height: 45%;
+    background-color: transparent;
+    display: flex;
+    justify-content: center;
+  }
+  .container {
+    padding: 1em;
   }
 }
-
+h1 {
+  margin-bottom: var(--spacing);
+  text-align: center;
+}
+.subheading {
+  margin-bottom: 2px;
+}
 label {
   display: flex;
   align-items: center;
@@ -277,7 +281,7 @@ label {
 span.line-number {
   margin-right: 0.75em;
 }
-.output .indent {
+span.indent {
   color: transparent;
 }
 pre code.output.hljs {
