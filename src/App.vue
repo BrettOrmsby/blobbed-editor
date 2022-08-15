@@ -13,7 +13,6 @@
       <h1>Blobbed Editor</h1>
       <button v-if="downloading" aria-busy="true">Please Wait...</button>
       <button v-else @click="downloadImage()">Download</button>
-      <h6 class="subheading">Image Resolution: {{ resolution }}</h6>
       <h6 class="subheading">Settings</h6>
       <article>
         <label for="blobBorderRadius"
@@ -48,6 +47,22 @@
           />
         </label>
       </article>
+      <h6 class="subheading">Highlighting</h6>
+      <article>
+        <input type="text" @focus="revealSearch()" @focusout="hideSearch()" />
+        <ul id="langSearch" class="listPopUp" role="listbox">
+          <li><a>Action</a></li>
+          <li><a>Another action</a></li>
+          <li><a>Something else here</a></li>
+          <li><a>Something else here</a></li>
+        </ul>
+      </article>
+      <h6 class="subheading">Data</h6>
+      <article>
+        <span>Characters Remaining: {{ charLimit }}</span
+        ><br />
+        <span>Image Resolution: {{ resolution }}</span>
+      </article>
     </div>
     <div class="edit container">
       <div class="codeEditWrapper">
@@ -56,7 +71,7 @@
           :hide_header="true"
           :language="settings.language"
           width="100%"
-          font_size="12px"
+          font_size="14px"
           :wrap_code="true"
         />
       </div>
@@ -92,6 +107,11 @@ export default {
       },
     };
   },
+  computed: {
+    charLimit() {
+      return 2000 - this.input.length;
+    },
+  },
   watch: {
     input(newer) {
       if (newer.length > 2000) {
@@ -112,6 +132,12 @@ export default {
     }.bind(this);
   },
   methods: {
+    revealSearch() {
+      document.querySelector("#langSearch").style.display = "block";
+    },
+    hideSearch() {
+      document.querySelector("#langSearch").style.display = "none";
+    },
     highlight(code, language) {
       return hljs.highlight(code, { language: language }).value;
     },
@@ -204,7 +230,7 @@ html {
   height: 100vh;
 }
 :root {
-  --font-size: 12px;
+  --font-size: 14px;
 }
 .main {
   display: flex;
@@ -265,6 +291,10 @@ h1 {
 .subheading {
   margin-bottom: 2px;
 }
+article {
+  margin-bottom: var(--spacing);
+  --block-spacing-horizontal: var(--spacing);
+}
 label {
   display: flex;
   align-items: center;
@@ -272,6 +302,7 @@ label {
 }
 [type="range"] {
   width: 50% !important;
+  margin: 0 !important;
 }
 [type="range"]::-ms-track {
   width: 50% !important;
@@ -281,6 +312,35 @@ label {
 }
 [type="range"]::-webkit-slider-runnable-track {
   width: 50% !important;
+}
+.listPopUp {
+  width: auto;
+  max-height: calc(3 * ((var(--form-element-spacing-vertical) * 1.75) + 1em));
+  overflow-y: auto;
+  display: flex;
+  align-items: center;
+  z-index: 1;
+  position: relative;
+  margin: 0 auto;
+  bottom: var(--spacing);
+  flex-direction: column;
+  padding: 0;
+  border: var(--border-width) solid var(--dropdown-border-color);
+  border-radius: var(--border-radius);
+  background-color: var(--dropdown-background-color);
+  color: var(--dropdown-color);
+  white-space: nowrap;
+}
+.listPopUp li {
+  width: 100%;
+  display: block;
+  margin-bottom: 0;
+  padding: calc(var(--form-element-spacing-vertical) * 0.5)
+    var(--form-element-spacing-horizontal);
+  list-style: none;
+}
+.listPopUp li:hover {
+  background-color: var(--dropdown-hover-background-color);
 }
 .output span {
   padding: 0 1em;
