@@ -49,7 +49,7 @@
       </article>
       <h6 class="subheading">Highlighting</h6>
       <article>
-        <SearchLang />
+        <SearchLang @changeLang="changeLang" />
       </article>
       <h6 class="subheading">Data</h6>
       <article>
@@ -128,6 +128,9 @@ export default {
     }.bind(this);
   },
   methods: {
+    changeLang(lang) {
+      this.settings.language = lang;
+    },
     highlight(code, language) {
       return hljs.highlight(code, { language: language }).value;
     },

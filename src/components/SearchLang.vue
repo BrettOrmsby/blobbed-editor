@@ -119,6 +119,11 @@ export default {
       this.enteredText = this.language;
     },
   },
+  watch: {
+    language(newer) {
+      this.$emit("changeLang", newer);
+    },
+  },
 };
 </script>
 
