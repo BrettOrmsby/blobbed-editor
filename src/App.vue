@@ -275,13 +275,28 @@ export default {
         }
         e.style.backgroundColor = window.getComputedStyle(e).color;
         e.style.borderRadius = this.settings.blobBorderRadius + "em";
-        e.style.margin = "0.25em " + this.settings.blobSpacing + "em";
+        if (!(e.innerText.length === 0 && e.classList.contains("indent"))) {
+          e.style.margin = "0.25em " + this.settings.blobSpacing + "em";
+        }
         e.style.width =
           (e.innerText.length * this.settings.blobWidth).toString() + "em";
         e.innerHTML = "&#8203;";
       });
       document.querySelector(".output-container").style.overflow = "visible";
       outputElement.style.overflow = "visible";
+      //reset for app type
+      outputElement.style.width = "fit-content";
+      outputElement.style.height = "fit-content";
+      outputElement.style.borderRadius = "0px";
+      if (this.settings.type === "app") {
+        const w = outputElement.offsetWidth;
+        const h = outputElement.offsetHeight;
+        const bigger = w > h ? w : h;
+        outputElement.style.width = bigger.toString() + "px";
+        outputElement.style.height = bigger.toString() + "px";
+        outputElement.style.borderRadius =
+          ((10 / 57) * bigger).toString() + "px";
+      }
       this.resolution =
         outputElement.offsetWidth.toString() +
         "x" +
@@ -326,7 +341,7 @@ html {
   width: 100%;
   background-color: transparent;
   display: flex;
-  justify-content: center;
+  justify-content: flex-start;
 }
 article {
   margin: 0;
@@ -415,7 +430,7 @@ span.indent {
   color: transparent;
 }
 pre code.output.hljs {
-  overflow-x: auto;
+  overflow-x: visible;
   display: inline-block;
   height: fit-content;
   -webkit-touch-callout: none;
