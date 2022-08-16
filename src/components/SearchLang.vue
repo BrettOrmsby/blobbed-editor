@@ -105,6 +105,7 @@ export default {
       return this.languages.filter((e) => e.includes(this.enteredText));
     },
   },
+  emits: ["changeLang"],
   methods: {
     selectLanguage(lang) {
       this.language = lang;

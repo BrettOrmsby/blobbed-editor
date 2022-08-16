@@ -15,6 +15,14 @@
       <button v-else @click="downloadImage()">Download</button>
       <h6 class="subheading">Settings</h6>
       <article>
+        <select
+          v-model="settings.type"
+          style="margin-bottom: calc(var(--spacing) * 0.25)"
+        >
+          <option value="regular" selected>Regular View</option>
+          <option value="app">App Icon View</option>
+          <option value="window">Window View</option>
+        </select>
         <label for="blobBorderRadius"
           >Blob Border Radius
           <input
@@ -26,6 +34,39 @@
             id="blobBorderRadius"
           />
         </label>
+        <label for="blobWidth"
+          >Blob Width
+          <input
+            type="range"
+            min="0.1"
+            max="2"
+            step="0.1"
+            v-model="settings.blobWidth"
+            id="blobWidth"
+          />
+        </label>
+        <label for="blobSpacing"
+          >Blob Spacing
+          <input
+            type="range"
+            min="0"
+            max="2"
+            step="0.05"
+            v-model="settings.blobSpacing"
+            id="blobSpacing"
+          />
+        </label>
+        <label for="editorPadding"
+          >Editor Padding
+          <input
+            type="range"
+            min="0"
+            max="5"
+            step="0.5"
+            v-model="settings.editorPadding"
+            id="editorPadding"
+          />
+        </label>
         <label for="imageSize"
           >Image Size
           <input
@@ -35,6 +76,15 @@
             step="0.5"
             v-model="settings.imageSize"
             id="imageSize"
+          />
+        </label>
+        <label for="filterSmallerBlobs">
+          Filter Smaller Blobs
+          <input
+            role="switch"
+            type="checkbox"
+            v-model="settings.filterSmallerBlobs"
+            id="filterSmallerBlobs"
           />
         </label>
         <label for="showLineNumbers"
@@ -82,11 +132,13 @@ import hljs from "highlight.js";
 import html2canvas from "html2canvas";
 import CodeEditor from "./components/CodeEditor.vue";
 import SearchLang from "./components/SearchLang.vue";
+//import VueFeather from "vue-feather";
 
 export default {
   components: {
     CodeEditor,
     SearchLang,
+    //VueFeather,
   },
   data() {
     return {
@@ -98,8 +150,12 @@ export default {
         language: "javascript",
         blobBorderRadius: 1,
         imageSize: 16,
-        filterSize: 0,
+        blobSpacing: 0.25,
+        blobWidth: 1,
+        editorPadding: 1,
+        filterSmallerBlobs: false,
         showLineNumbers: true,
+        type: "regular",
       },
     };
   },
@@ -188,12 +244,40 @@ export default {
             .split("\n")
             .join("\n<span class='hljs-comment line-number'> </span>");
       }
+      if (this.settings.type === "window") {
+        output =
+          '<div class="window-bar"><span></span><span></span><span></span></div>' +
+          output;
+      }
       outputElement.innerHTML = output;
       outputElement.style.fontSize = this.settings.imageSize + "px";
-      outputElement.querySelectorAll("span").forEach((e) => {
+      outputElement.style.padding = this.settings.editorPadding + "em";
+      //For window type
+      if (this.settings.type === "window") {
+        document.querySelectorAll(".window-bar > span").forEach((e) => {
+          e.classList.toggle("hljs-comment");
+          e.style.backgroundColor = window.getComputedStyle(e).color;
+          e.classList.toggle("hljs-comment");
+        });
+        const windowBar = document.querySelector(".window-bar");
+        windowBar.style.bottom = this.settings.editorPadding + "em";
+        windowBar.style.right = this.settings.editorPadding + "em";
+      }
+      document.querySelectorAll("#output > span").forEach((e) => {
+        if (
+          this.settings.filterSmallerBlobs &&
+          e.innerText.length <= 1 &&
+          !e.classList.contains("line-number") &&
+          !e.classList.contains("indent")
+        ) {
+          e.style.display = "none";
+          return;
+        }
         e.style.backgroundColor = window.getComputedStyle(e).color;
         e.style.borderRadius = this.settings.blobBorderRadius + "em";
-        e.style.width = (e.innerText.length * 1).toString() + "em";
+        e.style.margin = "0.25em " + this.settings.blobSpacing + "em";
+        e.style.width =
+          (e.innerText.length * this.settings.blobWidth).toString() + "em";
         e.innerHTML = "&#8203;";
       });
       document.querySelector(".output-container").style.overflow = "visible";
@@ -255,6 +339,7 @@ article {
   .sidebar {
     height: 100vh;
     overflow-y: auto;
+    overflow-x: hidden;
     width: 300px;
     min-width: auto;
     max-width: auto;
@@ -310,13 +395,21 @@ label {
 [type="range"]::-webkit-slider-runnable-track {
   width: 50% !important;
 }
-.output span {
-  padding: 0 1em;
-  margin: 0.25em;
+.window-bar {
+  position: relative;
+  padding-top: 1em;
+  padding-left: 0.5em;
+}
+.window-bar span {
+  border-radius: 100%;
+  width: 1em;
+  height: 1em;
+  margin-left: 0.5em;
   display: inline-block;
 }
-span.line-number {
-  margin-right: 0.75em;
+.output > span {
+  padding: 0 1em;
+  display: inline-block;
 }
 span.indent {
   color: transparent;

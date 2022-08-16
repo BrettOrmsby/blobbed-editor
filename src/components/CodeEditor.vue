@@ -36,6 +36,7 @@ modified code from https://github.com/justcaliturner/simple-code-editor
           read_only == true ? false : modelValue === undefined ? true : false
         "
         ref="textarea"
+        spellcheck="false"
         :autofocus="autofocus"
         @input="calcContainerWidth"
         @keydown.tab.prevent.stop="tab"
