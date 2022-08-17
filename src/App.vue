@@ -10,7 +10,10 @@
   />
   <main class="main">
     <div class="sidebar container">
-      <h1>Blobbed Editor</h1>
+      <hgroup>
+        <h1>Blobbed Editor</h1>
+        <em>Create blobbed, syntax highlighted, images of your code</em>
+      </hgroup>
       <button v-if="downloading" aria-busy="true">Please Wait...</button>
       <button v-else @click="downloadImage()">Download</button>
       <h6 class="subheading">Settings</h6>
@@ -107,33 +110,35 @@
         ><br />
         <span>Image Resolution: {{ resolution }}</span>
       </article>
-      <h6>FAQs</h6>
-      <article>
-        <b>How do indents work?</b>
-        <p>
-          Indents blobs are made whenever there are 2 spaces or a tab in your
-          code. Indents will be made even if they are within other blobs (like
-          comments) and will break up the blob.
-        </p>
-        <b>Why is my image not rendered properly?</b>
-        <p>
-          The blobbed images might be rendered improperly if the resolution size
-          is to big.
-        </p>
-        <b>What can I use the blobbed images for?</b>
-        <ul>
-          <li>Favicons</li>
-          <li>Logos</li>
-          <li>Profile Pictures</li>
-          <li>App Icons</li>
-          <li>Replacement For Stock Photos</li>
-        </ul>
-        <b>Why is there a character limit?</b>
-        <p>
-          There is a character limit because the blobbed image is much more
-          likely to be rendered improperly if there are too many blobs.
-        </p>
-      </article>
+      <details>
+        <summary role="button">FAQs</summary>
+        <article>
+          <b>How do indents work?</b>
+          <p>
+            Indents blobs are made whenever there are 2 spaces or a tab in your
+            code. Indents will be made even if they are within other blobs (like
+            comments) and will break up the blob.
+          </p>
+          <b>Why is my image not rendered properly?</b>
+          <p>
+            The blobbed images might be rendered improperly if the resolution
+            size is to big.
+          </p>
+          <b>What can I use the blobbed images for?</b>
+          <ul>
+            <li>Favicons</li>
+            <li>Logos</li>
+            <li>Profile Pictures</li>
+            <li>App Icons</li>
+            <li>Replacement For Stock Photos</li>
+          </ul>
+          <b>Why is there a character limit?</b>
+          <p style="margin-bottom: 0">
+            There is a character limit because the blobbed image is much more
+            likely to be rendered improperly if there are too many blobs.
+          </p>
+        </article>
+      </details>
     </div>
     <div class="edit container">
       <div class="codeEditWrapper">
@@ -146,6 +151,7 @@
           :wrap_code="true"
         />
       </div>
+      <br />
       <pre
         class="output-container"
       ><code class="hljs output" id="output"></code></pre>
@@ -217,10 +223,12 @@ export default {
     changeLang(lang) {
       this.settings.language = lang;
     },
+
     //Simple highlight method
     highlight(code, language) {
       return hljs.highlight(code, { language: language }).value;
     },
+
     //Updates the preview element to configured settings and input
     updatePreview() {
       //Store main element
@@ -230,9 +238,9 @@ export default {
         this.input,
         this.settings.language
       );
+
       //Store the output
       let output = "";
-
       //Repeat through each node to accommodate for nestled spans, indents and newlines
       traverse(outputElement, "");
 
@@ -279,11 +287,10 @@ export default {
 
       //If showLineNumbers prepend all lines with a line number blob
       if (this.settings.showLineNumbers) {
-        output =
-          "<span class='hljs-comment line-number'> </span>" +
-          output
-            .split("\n")
-            .join("\n<span class='hljs-comment line-number'> </span>");
+        output = output.replace(
+          /^/gm,
+          "<span class='hljs-comment line-number'> </span>"
+        );
       }
 
       //If window type add the window bar
@@ -297,6 +304,7 @@ export default {
       outputElement.innerHTML = output;
       outputElement.style.fontSize = this.settings.imageSize + "px";
       outputElement.style.padding = this.settings.editorPadding + "em";
+
       //For window type style the dots and bar
       if (this.settings.type === "window") {
         document.querySelectorAll(".window-bar > span").forEach((e) => {
@@ -340,7 +348,8 @@ export default {
       outputElement.style.width = "fit-content";
       outputElement.style.height = "fit-content";
       outputElement.style.borderRadius = "0px";
-      //Set image size to a square with padding if app type
+
+      //If app type set image size to a square with padding
       if (this.settings.type === "app") {
         const w = outputElement.offsetWidth;
         const h = outputElement.offsetHeight;
@@ -350,6 +359,7 @@ export default {
         outputElement.style.borderRadius =
           ((10 / 57) * bigger).toString() + "px";
       }
+
       //Update resolution and set overflow back
       this.resolution =
         outputElement.offsetWidth.toString() +
@@ -358,6 +368,7 @@ export default {
       document.querySelector(".output-container").style.overflow = "auto";
       outputElement.style.overflow = "auto";
     },
+
     //Download the image by creating a <a> element and clicking it
     async downloadImage() {
       const element = document.getElementById("output");
@@ -435,7 +446,6 @@ article {
   }
 }
 h1 {
-  margin-bottom: var(--spacing);
   text-align: center;
 }
 .subheading {
@@ -444,6 +454,10 @@ h1 {
 article {
   margin-bottom: var(--spacing);
   --block-spacing-horizontal: var(--spacing);
+}
+details {
+  border-bottom: 0;
+  margin-bottom: 0;
 }
 label {
   display: flex;
