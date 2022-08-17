@@ -1,6 +1,9 @@
 <template>
+  <label for="langSelect">Language</label>
   <input
     type="text"
+    id="langSelect"
+    style="margin-bottom: calc(var(--spacing) * 0.25)"
     placeholder="Search Languages"
     v-model="enteredText"
     @focus="revealSearch()"
@@ -137,6 +140,7 @@ export default {
   align-items: center;
   z-index: 1;
   position: relative;
+  top: 0.5em;
   margin: 0 auto;
   bottom: var(--spacing);
   flex-direction: column;

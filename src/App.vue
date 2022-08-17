@@ -1,18 +1,9 @@
 <template>
-  <link
-    id="theme"
-    rel="stylesheet"
-    :href="
-      'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.6.0/styles/' +
-      settings.theme +
-      '.min.css'
-    "
-  />
   <main class="main">
     <div class="sidebar container">
       <hgroup>
         <h1>Blobbed Editor</h1>
-        <em>Create blobbed, syntax highlighted, images of your code</em>
+        <p>Create blobbed, syntax highlighted, images of your code</p>
       </hgroup>
       <button v-if="downloading" aria-busy="true">Please Wait...</button>
       <button v-else @click="downloadImage()">Download</button>
@@ -103,6 +94,12 @@
       <h6 class="subheading">Highlighting</h6>
       <article>
         <SearchLang @changeLang="changeLang" />
+        <label for="theme">Theme</label>
+        <select v-model="settings.theme" id="theme">
+          <option v-for="(item, index) in themes" :value="item" :key="index">
+            {{ item }}
+          </option>
+        </select>
       </article>
       <h6 class="subheading">Data</h6>
       <article>
@@ -178,7 +175,7 @@ export default {
       input: 'const enter = yourText("here")',
       resolution: "",
       settings: {
-        theme: "atom-one-dark",
+        theme: "",
         language: "javascript",
         blobBorderRadius: 1,
         imageSize: 16,
@@ -189,6 +186,80 @@ export default {
         showLineNumbers: true,
         type: "regular",
       },
+      themes: [
+        "a11y-dark",
+        "a11y-light",
+        "agate",
+        "an-old-hope",
+        "androidstudio",
+        "arduino-light",
+        "arta",
+        "ascetic",
+        "atom-one-dark-reasonable",
+        "atom-one-dark",
+        "atom-one-light",
+        "brown-paper",
+        "codepen-embed",
+        "color-brewer",
+        "dark",
+        "default",
+        "devibeans",
+        "docco",
+        "far",
+        "felipec",
+        "foundation",
+        "github-dark-dimmed",
+        "github-dark",
+        "github",
+        "gml",
+        "googlecode",
+        "gradient-dark",
+        "gradient-light",
+        "grayscale",
+        "hybrid",
+        "idea",
+        "intellij-light",
+        "ir-black",
+        "isbl-editor-dark",
+        "isbl-editor-light",
+        "kimbie-dark",
+        "kimbie-light",
+        "lightfair",
+        "lioshi",
+        "magula",
+        "mono-blue",
+        "monokai-sublime",
+        "monokai",
+        "night-owl",
+        "nnfx-dark",
+        "nnfx-light",
+        "nord",
+        "obsidian",
+        "panda-syntax-dark",
+        "panda-syntax-light",
+        "paraiso-dark",
+        "paraiso-light",
+        "pojoaque",
+        "purebasic",
+        "qtcreator-dark",
+        "qtcreator-light",
+        "rainbow",
+        "routeros",
+        "school-book",
+        "shades-of-purple",
+        "srcery",
+        "stackoverflow-dark",
+        "stackoverflow-light",
+        "sunburst",
+        "tokyo-night-dark",
+        "tokyo-night-light",
+        "tomorrow-night-blue",
+        "tomorrow-night-bright",
+        "vs",
+        "vs2015",
+        "xcode",
+        "xt256.css",
+      ],
     };
   },
   computed: {
@@ -211,12 +282,20 @@ export default {
       },
       deep: true,
     },
+    "settings.theme": async function () {
+      let data = await fetch(
+        "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.6.0/styles/" +
+          this.settings.theme +
+          ".min.css"
+      );
+      let content = await data.text();
+      document.getElementById("customStyle").innerHTML = content;
+      this.updatePreview();
+    },
   },
   mounted() {
-    // Update the preview when the theme loads to update the blob colours
-    document.getElementById("theme").onload = async function () {
-      this.updatePreview();
-    }.bind(this);
+    // Force load the first theme
+    this.settings.theme = "atom-one-dark";
   },
   methods: {
     //Update the language from the search component
@@ -385,7 +464,6 @@ export default {
   },
 };
 </script>
-
 <style>
 @import "@/assets/pico.css";
 html {
