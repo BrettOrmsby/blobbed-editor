@@ -107,6 +107,33 @@
         ><br />
         <span>Image Resolution: {{ resolution }}</span>
       </article>
+      <h6>FAQs</h6>
+      <article>
+        <b>How do indents work?</b>
+        <p>
+          Indents blobs are made whenever there are 2 spaces or a tab in your
+          code. Indents will be made even if they are within other blobs (like
+          comments) and will break up the blob.
+        </p>
+        <b>Why is my image not rendered properly?</b>
+        <p>
+          The blobbed images might be rendered improperly if the resolution size
+          is to big.
+        </p>
+        <b>What can I use the blobbed images for?</b>
+        <ul>
+          <li>Favicons</li>
+          <li>Logos</li>
+          <li>Profile Pictures</li>
+          <li>App Icons</li>
+          <li>Replacement For Stock Photos</li>
+        </ul>
+        <b>Why is there a character limit?</b>
+        <p>
+          There is a character limit because the blobbed image is much more
+          likely to be rendered improperly if there are too many blobs.
+        </p>
+      </article>
     </div>
     <div class="edit container">
       <div class="codeEditWrapper">
@@ -119,7 +146,6 @@
           :wrap_code="true"
         />
       </div>
-      <br />
       <pre
         class="output-container"
       ><code class="hljs output" id="output"></code></pre>
@@ -165,7 +191,9 @@ export default {
     },
   },
   watch: {
+    //Update the preview on changes to input and settings
     input(newer) {
+      //Enforce character limit
       if (newer.length > 2000) {
         this.input = newer.slice(0, 2000);
       }
@@ -179,28 +207,38 @@ export default {
     },
   },
   mounted() {
+    // Update the preview when the theme loads to update the blob colours
     document.getElementById("theme").onload = async function () {
       this.updatePreview();
     }.bind(this);
   },
   methods: {
+    //Update the language from the search component
     changeLang(lang) {
       this.settings.language = lang;
     },
+    //Simple highlight method
     highlight(code, language) {
       return hljs.highlight(code, { language: language }).value;
     },
+    //Updates the preview element to configured settings and input
     updatePreview() {
+      //Store main element
       const outputElement = document.getElementById("output");
+      //Highlight the text
       outputElement.innerHTML = this.highlight(
         this.input,
         this.settings.language
       );
+      //Store the output
       let output = "";
+
+      //Repeat through each node to accommodate for nestled spans, indents and newlines
       traverse(outputElement, "");
 
       function traverse(node, type) {
         if (node.nodeType === Node.TEXT_NODE) {
+          //Get the text and split it by lines and indents to format it for the output
           const text = node.data;
           output += text
             .split("\n")
@@ -208,6 +246,7 @@ export default {
               if (!line) {
                 return "";
               }
+              //Split line by indents, remove blank elements and combine back with a indent span
               return line
                 .split(/ {2}|\t/g)
                 .map((section) => {
@@ -226,6 +265,7 @@ export default {
               "\n<span class='indent' style='padding:0;margin-left:0;margin-right:0'></span>"
             );
         } else {
+          //Repeat for each child and allow them to inherit its class if it is a text node
           for (let child of node.childNodes) {
             traverse(
               child,
@@ -237,6 +277,7 @@ export default {
         }
       }
 
+      //If showLineNumbers prepend all lines with a line number blob
       if (this.settings.showLineNumbers) {
         output =
           "<span class='hljs-comment line-number'> </span>" +
@@ -244,15 +285,19 @@ export default {
             .split("\n")
             .join("\n<span class='hljs-comment line-number'> </span>");
       }
+
+      //If window type add the window bar
       if (this.settings.type === "window") {
         output =
           '<div class="window-bar"><span></span><span></span><span></span></div>' +
           output;
       }
+
+      //Update the output element
       outputElement.innerHTML = output;
       outputElement.style.fontSize = this.settings.imageSize + "px";
       outputElement.style.padding = this.settings.editorPadding + "em";
-      //For window type
+      //For window type style the dots and bar
       if (this.settings.type === "window") {
         document.querySelectorAll(".window-bar > span").forEach((e) => {
           e.classList.toggle("hljs-comment");
@@ -263,7 +308,10 @@ export default {
         windowBar.style.bottom = this.settings.editorPadding + "em";
         windowBar.style.right = this.settings.editorPadding + "em";
       }
+
+      //Style all blobs
       document.querySelectorAll("#output > span").forEach((e) => {
+        //Filter non-indent smaller blobs if filterSmallerBlobs
         if (
           this.settings.filterSmallerBlobs &&
           e.innerText.length <= 1 &&
@@ -273,21 +321,26 @@ export default {
           e.style.display = "none";
           return;
         }
+        //Other styles
         e.style.backgroundColor = window.getComputedStyle(e).color;
         e.style.borderRadius = this.settings.blobBorderRadius + "em";
+        //Style all non-blank blobs that keep the lines at the same height on new lines with margin
         if (!(e.innerText.length === 0 && e.classList.contains("indent"))) {
           e.style.margin = "0.25em " + this.settings.blobSpacing + "em";
         }
+        //Update width based on the amount of characters
         e.style.width =
           (e.innerText.length * this.settings.blobWidth).toString() + "em";
         e.innerHTML = "&#8203;";
       });
+      //Update visibility for getting the resolution
       document.querySelector(".output-container").style.overflow = "visible";
       outputElement.style.overflow = "visible";
-      //reset for app type
+      //Reset the styles that were changed with the app type
       outputElement.style.width = "fit-content";
       outputElement.style.height = "fit-content";
       outputElement.style.borderRadius = "0px";
+      //Set image size to a square with padding if app type
       if (this.settings.type === "app") {
         const w = outputElement.offsetWidth;
         const h = outputElement.offsetHeight;
@@ -297,6 +350,7 @@ export default {
         outputElement.style.borderRadius =
           ((10 / 57) * bigger).toString() + "px";
       }
+      //Update resolution and set overflow back
       this.resolution =
         outputElement.offsetWidth.toString() +
         "x" +
@@ -304,6 +358,7 @@ export default {
       document.querySelector(".output-container").style.overflow = "auto";
       outputElement.style.overflow = "auto";
     },
+    //Download the image by creating a <a> element and clicking it
     async downloadImage() {
       const element = document.getElementById("output");
       this.downloading = true;
@@ -338,10 +393,8 @@ html {
 .output-container {
   margin-bottom: var(--spacing);
   overflow: auto;
-  width: 100%;
   background-color: transparent;
-  display: flex;
-  justify-content: flex-start;
+  margin: 0 auto;
 }
 article {
   margin: 0;
