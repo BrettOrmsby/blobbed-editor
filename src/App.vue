@@ -93,13 +93,20 @@
       </article>
       <h6 class="subheading">Highlighting</h6>
       <article>
-        <SearchLang @changeLang="changeLang" />
-        <label for="theme">Theme</label>
-        <select v-model="settings.theme" id="theme">
-          <option v-for="(item, index) in themes" :value="item" :key="index">
-            {{ item }}
-          </option>
-        </select>
+        <SearchList
+          @update="(lang) => (settings.language = lang)"
+          label="Language"
+          for="Languages"
+          :list="highlightData.languages"
+          start="javascript"
+        />
+        <SearchList
+          @update="(theme) => (settings.theme = theme)"
+          label="Theme"
+          for="Themes"
+          :list="highlightData.themes"
+          start="atom-one-dark"
+        />
       </article>
       <h6 class="subheading">Data</h6>
       <article>
@@ -160,13 +167,13 @@
 import hljs from "highlight.js";
 import html2canvas from "html2canvas";
 import CodeEditor from "./components/CodeEditor.vue";
-import SearchLang from "./components/SearchLang.vue";
+import SearchList from "./components/SearchList.vue";
 //import VueFeather from "vue-feather";
 
 export default {
   components: {
     CodeEditor,
-    SearchLang,
+    SearchList,
     //VueFeather,
   },
   data() {
@@ -174,6 +181,7 @@ export default {
       downloading: false,
       input: 'const enter = yourText("here")',
       resolution: "",
+      highlightData: require("@/assets/highlight-data.json"),
       settings: {
         theme: "",
         language: "javascript",
@@ -186,80 +194,6 @@ export default {
         showLineNumbers: true,
         type: "regular",
       },
-      themes: [
-        "a11y-dark",
-        "a11y-light",
-        "agate",
-        "an-old-hope",
-        "androidstudio",
-        "arduino-light",
-        "arta",
-        "ascetic",
-        "atom-one-dark-reasonable",
-        "atom-one-dark",
-        "atom-one-light",
-        "brown-paper",
-        "codepen-embed",
-        "color-brewer",
-        "dark",
-        "default",
-        "devibeans",
-        "docco",
-        "far",
-        "felipec",
-        "foundation",
-        "github-dark-dimmed",
-        "github-dark",
-        "github",
-        "gml",
-        "googlecode",
-        "gradient-dark",
-        "gradient-light",
-        "grayscale",
-        "hybrid",
-        "idea",
-        "intellij-light",
-        "ir-black",
-        "isbl-editor-dark",
-        "isbl-editor-light",
-        "kimbie-dark",
-        "kimbie-light",
-        "lightfair",
-        "lioshi",
-        "magula",
-        "mono-blue",
-        "monokai-sublime",
-        "monokai",
-        "night-owl",
-        "nnfx-dark",
-        "nnfx-light",
-        "nord",
-        "obsidian",
-        "panda-syntax-dark",
-        "panda-syntax-light",
-        "paraiso-dark",
-        "paraiso-light",
-        "pojoaque",
-        "purebasic",
-        "qtcreator-dark",
-        "qtcreator-light",
-        "rainbow",
-        "routeros",
-        "school-book",
-        "shades-of-purple",
-        "srcery",
-        "stackoverflow-dark",
-        "stackoverflow-light",
-        "sunburst",
-        "tokyo-night-dark",
-        "tokyo-night-light",
-        "tomorrow-night-blue",
-        "tomorrow-night-bright",
-        "vs",
-        "vs2015",
-        "xcode",
-        "xt256.css",
-      ],
     };
   },
   computed: {
