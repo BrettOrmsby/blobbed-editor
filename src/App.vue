@@ -4,7 +4,7 @@
       <hgroup class="title">
         <h1>Blobbed Editor</h1>
         <p style="margin-bottom: 0">
-          Create blobbed, syntax highlighted, images of your code.
+          Create blobbed, syntax-highlighted images of your code.
         </p>
       </hgroup>
       <div class="download-button">
