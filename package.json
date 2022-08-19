@@ -9,11 +9,9 @@
   },
   "dependencies": {
     "core-js": "^3.8.3",
-    "feather-icons": "^4.29.0",
     "highlight.js": "^11.6.0",
     "html2canvas": "^1.4.1",
-    "vue": "^3.2.13",
-    "vue-feather": "^2.0.0"
+    "vue": "^3.2.13"
   },
   "devDependencies": {
     "@babel/core": "^7.12.16",
