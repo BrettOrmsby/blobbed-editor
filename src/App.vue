@@ -3,7 +3,9 @@
     <div class="sidebar container">
       <hgroup class="title">
         <h1>Blobbed Editor</h1>
-        <p>Create blobbed, syntax highlighted, images of your code.</p>
+        <p style="margin-bottom: 0">
+          Create blobbed, syntax highlighted, images of your code.
+        </p>
       </hgroup>
       <div class="download-button">
         <button v-if="downloading" aria-busy="true">Please Wait...</button>
@@ -139,9 +141,14 @@
             <li>Replacement For Stock Photos</li>
           </ul>
           <b>Why is there a character limit?</b>
-          <p style="margin-bottom: 0">
+          <p>
             There is a character limit because the blobbed image is much more
             likely to be rendered improperly if there are too many blobs.
+          </p>
+          <b>Where can I find the source for Blobbed Editor?</b>
+          <p style="margin-bottom: 0">
+            You can find the source on
+            <a href="https://github.com/BrettOrmsby/blobbed-editor">GitHub</a>.
           </p>
         </article>
       </details>
@@ -372,9 +379,9 @@ export default {
 
       //Update resolution and set overflow back
       this.resolution =
-        outputElement.offsetWidth.toString() +
+        (outputElement.offsetWidth * 2).toString() +
         "x" +
-        outputElement.offsetHeight.toString();
+        (outputElement.offsetHeight * 2).toString();
       document.querySelector(".output-container").style.overflow = "auto";
       outputElement.style.overflow = "auto";
     },
