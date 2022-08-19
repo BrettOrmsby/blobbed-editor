@@ -1,34 +1,34 @@
-/* Cyan Light scheme (Default) */
+/* Pink Light scheme (Default) */
 /* Can be forced with data-theme="light" */
 [data-theme="light"],
 :root:not([data-theme="dark"]) {
-  --primary: #00acc1;
-  --primary-hover: #0097a7;
-  --primary-focus: rgba(0, 172, 193, 0.125);
+  --primary: #d81b60;
+  --primary-hover: #c2185b;
+  --primary-focus: rgba(216, 27, 96, 0.125);
   --primary-inverse: #FFF;
 }
 
-/* Cyan Dark scheme (Auto) */
+/* Pink Dark scheme (Auto) */
 /* Automatically enabled if user has Dark mode enabled */
 @media only screen and (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --primary: #00acc1;
-    --primary-hover: #00bcd4;
-    --primary-focus: rgba(0, 172, 193, 0.25);
+    --primary: #d81b60;
+    --primary-hover: #e91e63;
+    --primary-focus: rgba(216, 27, 96, 0.25);
     --primary-inverse: #FFF;
   }
 }
 
-/* Cyan Dark scheme (Forced) */
+/* Pink Dark scheme (Forced) */
 /* Enabled if forced with data-theme="dark" */
 [data-theme="dark"] {
-  --primary: #00acc1;
-  --primary-hover: #00bcd4;
-  --primary-focus: rgba(0, 172, 193, 0.25);
+  --primary: #d81b60;
+  --primary-hover: #e91e63;
+  --primary-focus: rgba(216, 27, 96, 0.25);
   --primary-inverse: #FFF;
 }
 
-/* Cyan (Common styles) */
+/* Pink (Common styles) */
 :root {
   --form-element-active-border-color: var(--primary);
   --form-element-focus-color: var(--primary-focus);

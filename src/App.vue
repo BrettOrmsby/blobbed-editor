@@ -9,7 +9,7 @@
         <button v-if="downloading" aria-busy="true">Please Wait...</button>
         <button v-else @click="downloadImage()">Download</button>
       </div>
-      <h6 class="subheading">Settings</h6>
+      <strong class="subheading">Settings</strong>
       <article>
         <select
           v-model="settings.type"
@@ -93,24 +93,24 @@
           />
         </label>
       </article>
-      <h6 class="subheading">Highlighting</h6>
+      <strong class="subheading">Highlighting</strong>
       <article>
         <SearchList
           @update="(lang) => (settings.language = lang)"
           label="Language"
           for="Languages"
           :list="highlightData.languages"
-          start="javascript"
+          :start="this.settings.language"
         />
         <SearchList
           @update="(theme) => (settings.theme = theme)"
           label="Theme"
           for="Themes"
           :list="highlightData.themes"
-          start="atom-one-dark"
+          :start="this.settings.theme"
         />
       </article>
-      <h6 class="subheading">Data</h6>
+      <strong class="subheading">Data</strong>
       <article>
         <span>Characters Remaining: {{ charLimit }}</span
         ><br />
@@ -181,11 +181,11 @@ export default {
   data() {
     return {
       downloading: false,
-      input: 'const enter = yourText("here")',
+      input: 'const enter = yourCode("here")',
       resolution: "",
       highlightData: require("@/assets/highlight-data.json"),
       settings: {
-        theme: "",
+        theme: "default",
         language: "javascript",
         blobBorderRadius: 1,
         imageSize: 16,
@@ -231,14 +231,9 @@ export default {
   },
   mounted() {
     // Force load the first theme
-    this.settings.theme = "atom-one-dark";
+    this.settings.theme = "panda-syntax-dark";
   },
   methods: {
-    //Update the language from the search component
-    changeLang(lang) {
-      this.settings.language = lang;
-    },
-
     //Simple highlight method
     highlight(code, language) {
       return hljs.highlight(code, { language: language }).value;

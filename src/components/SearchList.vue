@@ -15,7 +15,7 @@
     <li
       v-for="(item, index) in filteredList"
       :key="index"
-      @mousedown="selectItem(item)"
+      @mousedown.prevent="selectItem(item)"
       :class="{ selected: item == output }"
     >
       {{ item }}
