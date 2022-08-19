@@ -1,12 +1,14 @@
 <template>
   <main class="main">
     <div class="sidebar container">
-      <hgroup>
+      <hgroup class="title">
         <h1>Blobbed Editor</h1>
-        <p>Create blobbed, syntax highlighted, images of your code</p>
+        <p>Create blobbed, syntax highlighted, images of your code.</p>
       </hgroup>
-      <button v-if="downloading" aria-busy="true">Please Wait...</button>
-      <button v-else @click="downloadImage()">Download</button>
+      <div class="download-button">
+        <button v-if="downloading" aria-busy="true">Please Wait...</button>
+        <button v-else @click="downloadImage()">Download</button>
+      </div>
       <h6 class="subheading">Settings</h6>
       <article>
         <select
@@ -114,7 +116,7 @@
         ><br />
         <span>Image Resolution: {{ resolution }}</span>
       </article>
-      <details>
+      <details class="faq-button">
         <summary role="button">FAQs</summary>
         <article>
           <b>How do indents work?</b>
@@ -123,9 +125,9 @@
             code. Indents will be made even if they are within other blobs (like
             comments) and will break up the blob.
           </p>
-          <b>Why is my image not rendered properly?</b>
+          <b>Why is my image not downloaded properly?</b>
           <p>
-            The blobbed images might be rendered improperly if the resolution
+            The blobbed images might be downloaded improperly if the resolution
             size is to big.
           </p>
           <b>What can I use the blobbed images for?</b>
@@ -400,6 +402,7 @@ export default {
 </script>
 <style>
 @import "@/assets/pico.css";
+@import "@/assets/main.css";
 html {
   height: 100vh;
 }
@@ -412,6 +415,17 @@ html {
 }
 .sidebar {
   margin-bottom: var(--spacing);
+  display: flex;
+  flex-direction: column;
+}
+.download-button {
+  order: 1;
+}
+.title {
+  order: -2;
+}
+.faq-button {
+  order: -1;
 }
 .output-container {
   margin-bottom: var(--spacing);
@@ -435,6 +449,9 @@ article {
     min-width: auto;
     max-width: auto;
     border-right: 1px solid var(--muted-border-color);
+  }
+  .sidebar > * {
+    order: 0;
   }
   .edit {
     width: calc(100vw - 300px);
