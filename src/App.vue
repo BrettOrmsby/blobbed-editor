@@ -434,6 +434,7 @@ html {
   overflow: auto;
   background-color: transparent;
   margin: 0 auto;
+  max-width: 100%;
 }
 article {
   margin: 0;
