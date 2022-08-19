@@ -2,9 +2,11 @@
   <label :for="`${this.for}Search`">{{ label }}</label>
   <input
     type="text"
+    autocomplete="false"
     :id="`${this.for}Search`"
     style="margin-bottom: calc(var(--spacing) * 0.25)"
     :placeholder="`Search ${this.for}`"
+    @keyup.enter="selectTop()"
     v-model="enteredText"
     @focus="revealSelect()"
     @focusout="hideSelect()"
@@ -26,11 +28,11 @@ export default {
   props: ["for", "list", "label", "start"],
   data() {
     return {
-      output: "javascript",
-      enteredText: "javascript",
+      output: "",
+      enteredText: "",
     };
   },
-  mounted() {
+  created() {
     this.output = this.start;
     this.enteredText = this.start;
   },
@@ -41,6 +43,11 @@ export default {
   },
   emits: ["update"],
   methods: {
+    selectTop() {
+      console.log("ran");
+      this.output = this.filteredList[0] || this.output;
+      document.querySelector(`#${this.for}Search`).blur();
+    },
     selectItem(item) {
       this.output = item;
       document.querySelector(`#${this.for}Search`).blur();
