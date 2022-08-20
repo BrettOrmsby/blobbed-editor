@@ -127,6 +127,12 @@
             code. Indents will be made even if they are within other blobs (like
             comments) and will break up the blob.
           </p>
+          <b>How does filtering smaller blobs work?</b>
+          <p>
+            When you chose to filter smaller blobs, all blobs with a character
+            length of 1 are removed. This will keep newline characters even if
+            their full line is removed.
+          </p>
           <b>Why is my image not downloaded properly?</b>
           <p>
             The blobbed images might be downloaded improperly if the resolution
