@@ -198,7 +198,7 @@ export default {
       resolution: "",
       highlightData: require("@/assets/highlight-data.json"),
       settings: {
-        theme: "default",
+        theme: "",
         language: "javascript",
         blobBorderRadius: 1,
         imageSize: 16,
@@ -242,7 +242,7 @@ export default {
       this.updatePreview();
     },
   },
-  mounted() {
+  created() {
     // Force load the first theme
     this.settings.theme = "panda-syntax-dark";
   },
