@@ -44,7 +44,7 @@ downloadImage() {
 
 ![window](images/window.png)
 
-## What Can I Use It For
+## What Can I Use It For?
 
 - Favicons
 - Logos
