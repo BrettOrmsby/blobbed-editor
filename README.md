@@ -36,7 +36,7 @@ downloadImage() {
 
 ### App Icon
 
-![app icon](images/app%20icon.png)
+![app icon](images/app-icon.png)
 
 > When generating app icons I would recomend to keep the lines brief like the [logo](images/regular.png)
 
