@@ -54,6 +54,17 @@
             id="blobSpacing"
           />
         </label>
+        <label for="lineSpacing"
+          >Line Spacing
+          <input
+            type="range"
+            min="0"
+            max="2"
+            step="0.05"
+            v-model="settings.lineSpacing"
+            id="lineSpacing"
+          />
+        </label>
         <label for="editorPadding"
           >Editor Padding
           <input
@@ -201,6 +212,7 @@ export default {
         blobBorderRadius: 1,
         imageSize: 16,
         blobSpacing: 0.25,
+        lineSpacing: 0.25,
         blobWidth: 1,
         editorPadding: 1,
         filterSmallerBlobs: false,
@@ -422,7 +434,7 @@ export default {
   padding: 0 1em;
   display: inline-block;
   border-radius: v-bind('settings.blobBorderRadius + "em"');
-  margin: v-bind('"0.25em " + settings.blobSpacing + "em"');
+  margin: v-bind("`${settings.lineSpacing}em ${settings.blobSpacing}em`");
 }
 span.indent {
   color: transparent;
@@ -431,7 +443,6 @@ span.new-line-spacer {
   padding: 0;
   margin: 0;
 }
-
 pre code.output.hljs {
   overflow-x: visible;
   display: inline-block;
