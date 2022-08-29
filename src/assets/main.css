@@ -1,37 +1,104 @@
-/* Pink Light scheme (Default) */
-/* Can be forced with data-theme="light" */
-[data-theme="light"],
-:root:not([data-theme="dark"]) {
-  --primary: #d81b60;
-  --primary-hover: #c2185b;
-  --primary-focus: rgba(216, 27, 96, 0.125);
-  --primary-inverse: #FFF;
-}
-
-/* Pink Dark scheme (Auto) */
-/* Automatically enabled if user has Dark mode enabled */
-@media only screen and (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --primary: #d81b60;
-    --primary-hover: #e91e63;
-    --primary-focus: rgba(216, 27, 96, 0.25);
-    --primary-inverse: #FFF;
+html {
+    height: 100vh;
   }
-}
-
-/* Pink Dark scheme (Forced) */
-/* Enabled if forced with data-theme="dark" */
-[data-theme="dark"] {
-  --primary: #d81b60;
-  --primary-hover: #e91e63;
-  --primary-focus: rgba(216, 27, 96, 0.25);
-  --primary-inverse: #FFF;
-}
-
-/* Pink (Common styles) */
-:root {
-  --form-element-active-border-color: var(--primary);
-  --form-element-focus-color: var(--primary-focus);
-  --switch-color: var(--primary-inverse);
-  --switch-checked-background-color: var(--primary);
-}
+  :root {
+    --font-size: 14px;
+  }
+  .main {
+    display: flex;
+    flex-wrap: wrap;
+  }
+  .sidebar {
+    margin-bottom: var(--spacing);
+    display: flex;
+    flex-direction: column;
+  }
+  .download-button {
+    order: 1;
+  }
+  .title {
+    order: -2;
+  }
+  .faq-button {
+    order: -1;
+  }
+  .output-container {
+    margin-bottom: var(--spacing);
+    overflow: auto;
+    background-color: transparent;
+    margin: 0 auto;
+    max-width: 100%;
+  }
+  article {
+    margin: 0;
+  }
+  @media (min-width: 576px) {
+    .main {
+      height: 100vh;
+      flex-wrap: nowrap;
+    }
+    .sidebar {
+      height: 100vh;
+      overflow-y: auto;
+      overflow-x: hidden;
+      width: 300px;
+      min-width: auto;
+      max-width: auto;
+      border-right: 1px solid var(--muted-border-color);
+    }
+    .sidebar > * {
+      order: 0;
+    }
+    .edit {
+      width: calc(100vw - 300px);
+      height: 100vh;
+      display: flex;
+      justify-content: space-around;
+      flex-direction: column;
+      min-width: auto;
+      max-width: auto;
+    }
+    .codeEditWrapper {
+      overflow: auto;
+      height: 45%;
+      border-radius: 12px;
+    }
+    .output-container {
+      height: 45%;
+    }
+    .container {
+      padding: 1em;
+    }
+  }
+  h1 {
+    text-align: center;
+  }
+  .subheading {
+    margin-bottom: 2px;
+  }
+  article {
+    margin-bottom: var(--spacing);
+    --block-spacing-horizontal: var(--spacing);
+  }
+  details {
+    border-bottom: 0;
+    margin-bottom: 0;
+  }
+  label {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  [type="range"] {
+    width: 50% !important;
+    margin: 0 !important;
+  }
+  [type="range"]::-ms-track {
+    width: 50% !important;
+  }
+  [type="range"]::-moz-range-track {
+    width: 50% !important;
+  }
+  [type="range"]::-webkit-slider-runnable-track {
+    width: 50% !important;
+  }

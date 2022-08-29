@@ -54,6 +54,17 @@
             id="blobSpacing"
           />
         </label>
+        <label for="lineSpacing"
+          >Line Spacing
+          <input
+            type="range"
+            min="0"
+            max="2"
+            step="0.05"
+            v-model="settings.lineSpacing"
+            id="lineSpacing"
+          />
+        </label>
         <label for="editorPadding"
           >Editor Padding
           <input
@@ -183,13 +194,11 @@ import hljs from "highlight.js";
 import html2canvas from "html2canvas";
 import CodeEditor from "./components/CodeEditor.vue";
 import SearchList from "./components/SearchList.vue";
-//import VueFeather from "vue-feather";
 
 export default {
   components: {
     CodeEditor,
     SearchList,
-    //VueFeather,
   },
   data() {
     return {
@@ -203,6 +212,7 @@ export default {
         blobBorderRadius: 1,
         imageSize: 16,
         blobSpacing: 0.25,
+        lineSpacing: 0.25,
         blobWidth: 1,
         editorPadding: 1,
         filterSmallerBlobs: false,
@@ -292,9 +302,7 @@ export default {
                 })
                 .join("<span class='indent'>  </span>");
             })
-            .join(
-              "\n<span class='indent' style='padding:0;margin-left:0;margin-right:0'></span>"
-            );
+            .join("\n<span class='indent new-line-spacer'></span>");
         } else {
           //Repeat for each child and allow them to inherit its class if it is a text node
           for (let child of node.childNodes) {
@@ -325,8 +333,6 @@ export default {
 
       //Update the output element
       outputElement.innerHTML = output;
-      outputElement.style.fontSize = this.settings.imageSize + "px";
-      outputElement.style.padding = this.settings.editorPadding + "em";
 
       //For window type style the dots and bar
       if (this.settings.type === "window") {
@@ -340,9 +346,9 @@ export default {
         windowBar.style.right = this.settings.editorPadding + "em";
       }
 
-      //Style all blobs
+      //Filter and apply unique styles to each blob
       document.querySelectorAll("#output > span").forEach((e) => {
-        //Filter non-indent smaller blobs if filterSmallerBlobs
+        //Filter non-indent and non-line-number smaller blobs if filterSmallerBlobs
         if (
           this.settings.filterSmallerBlobs &&
           e.innerText.length <= 1 &&
@@ -352,21 +358,21 @@ export default {
           e.style.display = "none";
           return;
         }
-        //Other styles
+        //Set background color to the color provided by hljs
         e.style.backgroundColor = window.getComputedStyle(e).color;
-        e.style.borderRadius = this.settings.blobBorderRadius + "em";
-        //Style all non-blank blobs that keep the lines at the same height on new lines with margin
-        if (!(e.innerText.length === 0 && e.classList.contains("indent"))) {
-          e.style.margin = "0.25em " + this.settings.blobSpacing + "em";
-        }
+
         //Update width based on the amount of characters
         e.style.width =
           (e.innerText.length * this.settings.blobWidth).toString() + "em";
+
+        //Add inner blank character so the span width is kept
         e.innerHTML = "&#8203;";
       });
+
       //Update visibility for getting the resolution
       document.querySelector(".output-container").style.overflow = "visible";
       outputElement.style.overflow = "visible";
+
       //Reset the styles that were changed with the app type
       outputElement.style.width = "fit-content";
       outputElement.style.height = "fit-content";
@@ -410,111 +416,8 @@ export default {
 </script>
 <style>
 @import "@/assets/pico.css";
+@import "@/assets/theme.css";
 @import "@/assets/main.css";
-html {
-  height: 100vh;
-}
-:root {
-  --font-size: 14px;
-}
-.main {
-  display: flex;
-  flex-wrap: wrap;
-}
-.sidebar {
-  margin-bottom: var(--spacing);
-  display: flex;
-  flex-direction: column;
-}
-.download-button {
-  order: 1;
-}
-.title {
-  order: -2;
-}
-.faq-button {
-  order: -1;
-}
-.output-container {
-  margin-bottom: var(--spacing);
-  overflow: auto;
-  background-color: transparent;
-  margin: 0 auto;
-  max-width: 100%;
-}
-article {
-  margin: 0;
-}
-@media (min-width: 576px) {
-  .main {
-    height: 100vh;
-    flex-wrap: nowrap;
-  }
-  .sidebar {
-    height: 100vh;
-    overflow-y: auto;
-    overflow-x: hidden;
-    width: 300px;
-    min-width: auto;
-    max-width: auto;
-    border-right: 1px solid var(--muted-border-color);
-  }
-  .sidebar > * {
-    order: 0;
-  }
-  .edit {
-    width: calc(100vw - 300px);
-    height: 100vh;
-    display: flex;
-    justify-content: space-around;
-    flex-direction: column;
-    min-width: auto;
-    max-width: auto;
-  }
-  .codeEditWrapper {
-    overflow: auto;
-    height: 45%;
-    border-radius: 12px;
-  }
-  .output-container {
-    height: 45%;
-  }
-  .container {
-    padding: 1em;
-  }
-}
-h1 {
-  text-align: center;
-}
-.subheading {
-  margin-bottom: 2px;
-}
-article {
-  margin-bottom: var(--spacing);
-  --block-spacing-horizontal: var(--spacing);
-}
-details {
-  border-bottom: 0;
-  margin-bottom: 0;
-}
-label {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-[type="range"] {
-  width: 50% !important;
-  margin: 0 !important;
-}
-[type="range"]::-ms-track {
-  width: 50% !important;
-}
-[type="range"]::-moz-range-track {
-  width: 50% !important;
-}
-[type="range"]::-webkit-slider-runnable-track {
-  width: 50% !important;
-}
 .window-bar {
   position: relative;
   padding-top: 1em;
@@ -530,9 +433,15 @@ label {
 .output > span {
   padding: 0 1em;
   display: inline-block;
+  border-radius: v-bind('settings.blobBorderRadius + "em"');
+  margin: v-bind("`${settings.lineSpacing}em ${settings.blobSpacing}em`");
 }
 span.indent {
   color: transparent;
+}
+span.new-line-spacer {
+  padding: 0;
+  margin: 0;
 }
 pre code.output.hljs {
   overflow-x: visible;
@@ -545,5 +454,7 @@ pre code.output.hljs {
   -ms-user-select: none;
   user-select: none;
   cursor: default;
+  padding: v-bind('settings.editorPadding + "em"');
+  font-size: v-bind('settings.imageSize + "px"');
 }
 </style>
