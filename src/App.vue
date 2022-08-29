@@ -404,7 +404,7 @@ export default {
 </script>
 <style>
 @import "@/assets/pico.css";
-@import "@assets/theme.css";
+@import "@/assets/theme.css";
 @import "@/assets/main.css";
 .window-bar {
   position: relative;
