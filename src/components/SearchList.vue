@@ -18,8 +18,7 @@
       @mousedown.prevent="selectItem(item)"
       :class="{ selected: item == output }"
       v-html="bold(item)"
-    >
-    </li>
+    ></li>
   </ul>
 </template>
 
@@ -60,8 +59,8 @@ export default {
       this.enteredText = this.output;
     },
     bold(item) {
-      return item.replace(this.enteredText, `<b>${this.enteredText}</b>`)
-    }
+      return item.replace(this.enteredText, `<b>${this.enteredText}</b>`);
+    },
   },
   watch: {
     output(newer) {
