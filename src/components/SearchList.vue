@@ -17,8 +17,8 @@
       :key="index"
       @mousedown.prevent="selectItem(item)"
       :class="{ selected: item == output }"
+      v-html="bold(item)"
     >
-      {{ item }}
     </li>
   </ul>
 </template>
@@ -44,7 +44,6 @@ export default {
   emits: ["update"],
   methods: {
     selectTop() {
-      console.log("ran");
       this.output = this.filteredList[0] || this.output;
       document.querySelector(`#${this.for}Search`).blur();
     },
@@ -60,6 +59,9 @@ export default {
       document.querySelector(`#${this.for}Select`).style.display = "none";
       this.enteredText = this.output;
     },
+    bold(item) {
+      return item.replace(this.enteredText, `<b>${this.enteredText}</b>`)
+    }
   },
   watch: {
     output(newer) {
